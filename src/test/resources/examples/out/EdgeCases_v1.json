@@ -1,0 +1,131 @@
+{
+  "modelType" : "Submodel",
+  "kind" : "Instance",
+  "semanticId" : {
+    "keys" : [ {
+      "type" : "GlobalReference",
+      "value" : "urn:example:edge:submodel:1#EdgeCases"
+    } ],
+    "type" : "ModelReference"
+  },
+  "administration" : {
+    "revision" : "0",
+    "version" : "1.0.0"
+  },
+  "id" : "urn:uuid:32f168e6-549e-4835-9426-0841089de132",
+  "idShort" : "EdgeCases",
+  "submodelElements" : [ {
+    "modelType" : "SubmodelElementCollection",
+    "idShort" : "Process",
+    "value" : [ {
+      "modelType" : "Property",
+      "value" : "180.5",
+      "valueType" : "xs:double",
+      "idShort" : "TemperatureC"
+    }, {
+      "modelType" : "Property",
+      "value" : "356.9",
+      "valueType" : "xs:double",
+      "idShort" : "TemperatureF"
+    } ]
+  }, {
+    "modelType" : "SubmodelElementCollection",
+    "idShort" : "Dimensions",
+    "value" : [ {
+      "modelType" : "Property",
+      "value" : "1.2345",
+      "valueType" : "xs:double",
+      "idShort" : "LengthM"
+    } ]
+  }, {
+    "modelType" : "SubmodelElementCollection",
+    "idShort" : "Order",
+    "value" : [ {
+      "modelType" : "Property",
+      "value" : "ORD-777",
+      "valueType" : "xs:string",
+      "idShort" : "Id"
+    }, {
+      "modelType" : "Property",
+      "value" : "high",
+      "valueType" : "xs:string",
+      "idShort" : "Priority"
+    }, {
+      "modelType" : "SubmodelElementCollection",
+      "idShort" : "Customer",
+      "value" : [ {
+        "modelType" : "Property",
+        "value" : "Jane Doe",
+        "valueType" : "xs:string",
+        "idShort" : "FullName"
+      } ]
+    } ]
+  }, {
+    "modelType" : "SubmodelElementCollection",
+    "idShort" : "Derived",
+    "value" : [ {
+      "modelType" : "Property",
+      "value" : "001-ABC",
+      "valueType" : "xs:string",
+      "idShort" : "Serial"
+    } ]
+  }, {
+    "modelType" : "SubmodelElementCollection",
+    "idShort" : "Lookup",
+    "value" : [ {
+      "modelType" : "Property",
+      "value" : "Germany",
+      "valueType" : "xs:string",
+      "idShort" : "CountryName"
+    } ]
+  }, {
+    "modelType" : "SubmodelElementCollection",
+    "idShort" : "Speed",
+    "value" : [ {
+      "modelType" : "Property",
+      "value" : "200.0",
+      "valueType" : "xs:double",
+      "idShort" : "Normalized"
+    } ]
+  }, {
+    "modelType" : "SubmodelElementCollection",
+    "idShort" : "Date",
+    "value" : [ {
+      "modelType" : "Property",
+      "value" : "2024-09-02T08:15:30Z",
+      "valueType" : "xs:dateTime",
+      "idShort" : "UTC"
+    } ]
+  }, {
+    "modelType" : "SubmodelElementCollection",
+    "idShort" : "Meta",
+    "value" : [ {
+      "modelType" : "Property",
+      "value" : "AUTO",
+      "valueType" : "xs:string",
+      "idShort" : "Mode"
+    }, {
+      "modelType" : "Property",
+      "value" : "blue",
+      "valueType" : "xs:string",
+      "idShort" : "Category"
+    } ]
+  }, {
+    "modelType" : "SubmodelElementCollection",
+    "idShort" : "Optional",
+    "value" : [ {
+      "modelType" : "Property",
+      "value" : "Europe/Berlin",
+      "valueType" : "xs:string",
+      "idShort" : "TZ"
+    } ]
+  }, {
+    "modelType" : "SubmodelElementCollection",
+    "idShort" : "Unsafe",
+    "value" : [ {
+      "modelType" : "Property",
+      "valueType" : "xs:string",
+      "idShort" : "CycledVar"
+    } ]
+  } ]
+}

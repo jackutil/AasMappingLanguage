@@ -1,0 +1,61 @@
+{
+  "modelType" : "Submodel",
+  "kind" : "Instance",
+  "semanticId" : {
+    "keys" : [ {
+      "type" : "GlobalReference",
+      "value" : "urn:bamm:io.catenax.serial_part:1.1.0#SerialPart"
+    } ],
+    "type" : "ModelReference"
+  },
+  "administration" : {
+    "revision" : "0",
+    "version" : "1.1.0"
+  },
+  "id" : "urn:uuid:bc799623-575d-4433-87a4-ef72f3f4b4a1",
+  "description" : [ {
+    "language" : "en",
+    "text" : "Standardized SerialPart submodel for traceability in Catena-X."
+  } ],
+  "displayName" : [ {
+    "language" : "en",
+    "text" : "Catena-X Serial Part"
+  } ],
+  "idShort" : "SerialPart",
+  "submodelElements" : [ {
+    "modelType" : "Property",
+    "value" : "BPNL00000003CML1",
+    "valueType" : "xs:string",
+    "idShort" : "manufacturerId"
+  }, {
+    "modelType" : "Property",
+    "value" : "9AK12345678",
+    "valueType" : "xs:string",
+    "idShort" : "manufacturerPartId"
+  }, {
+    "modelType" : "Property",
+    "value" : "CUST-423-A",
+    "valueType" : "xs:string",
+    "idShort" : "customerPartId"
+  }, {
+    "modelType" : "Property",
+    "value" : "SN-2024-00001234",
+    "valueType" : "xs:string",
+    "idShort" : "serialNumber"
+  }, {
+    "modelType" : "Property",
+    "value" : "2024-09-02T08:15:30Z",
+    "valueType" : "xs:dateTime",
+    "idShort" : "manufacturingDate"
+  }, {
+    "modelType" : "Property",
+    "value" : "DE",
+    "valueType" : "xs:string",
+    "idShort" : "manufacturingCountry"
+  }, {
+    "modelType" : "Property",
+    "value" : "urn:uuid:550e8400-e29b-41d4-a716-446655440000",
+    "valueType" : "xs:string",
+    "idShort" : "catenaXId"
+  } ]
+}

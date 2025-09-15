@@ -1,0 +1,11 @@
+{
+  "Process" : {
+    "Temperature" : 180.5,
+    "BatchId" : "B42",
+    "Duration" : 120,
+    "Info" : {
+      "min" : 1,
+      "max" : 10
+    }
+  }
+}

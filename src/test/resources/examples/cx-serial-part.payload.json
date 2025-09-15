@@ -1,0 +1,22 @@
+{
+  "part": {
+    "manufacturer": {
+      "bpn": "BPNL00000003CML1",
+      "partId": "9AK12345678",
+      "name": "Drive Motor 3kW"
+    },
+    "customer": {
+      "partId": "CUST-423-A"
+    },
+    "serial": "SN-2024-00001234",
+    "production": {
+      "date": "2024-09-02T10:15:30+02:00",
+      "country": "DE"
+    },
+    "lot": {
+      "batch": "BATCH-20240902-01"
+    },
+    "instanceId": "urn:uuid:550e8400-e29b-41d4-a716-446655440000"
+  }
+}
+

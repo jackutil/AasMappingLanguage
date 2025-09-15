@@ -1,0 +1,17 @@
+{
+  "batch": {
+    "id": "BATCH-2024-09-02-01",
+    "production": {
+      "date": "2024-09-02T10:15:30+02:00",
+      "country": "DE"
+    },
+    "material": {
+      "customerPartId": "CUST-MAT-0815",
+      "supplierPartId": "SUPP-4711-A"
+    },
+    "manufacturer": {
+      "bpn": "BPNL00000003CML1"
+    }
+  }
+}
+

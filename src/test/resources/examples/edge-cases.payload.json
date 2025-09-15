@@ -1,0 +1,26 @@
+{
+  "order": {
+    "id": "ORD-777",
+    "priority": "high"
+  },
+  "env": {
+    "tz": "Europe/Berlin"
+  },
+  "line": {
+    "temps": { "celsius": " 180.49 ", "fahrenheit": " 356.882 " },
+    "lengthMm": 1234.5,
+    "speed": null
+  },
+  "meta": {
+    "batch": "  B42  ",
+    "tags": ["A", "B"],
+    "mode": "AUTO",
+    "category": "blue"
+  },
+  "date": "2024-09-02T10:15:30+02:00",
+  "user": { "first": "  Jane", "last": "Doe  " },
+  "text": "Part SN: SN-001-ABC code=42",
+  "lookupKey": "DE",
+  "optional": {}
+}
+

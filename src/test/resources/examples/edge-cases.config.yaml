@@ -1,0 +1,158 @@
+apiVersion: "aasx.map/v1"
+name: "EdgeCases_v1"
+description: "Stress-test complex mapping: vars, fallbacks, predicates, transforms, constraints, nesting."
+
+model:
+  uploadId: "u_demo"
+
+submodel:
+  createIfMissing: true
+  idStrategy:
+    kind: "uuidv4"
+  idShort: "EdgeCases"
+  kind: "INSTANCE"
+  semanticId: "urn:example:edge:submodel:1#EdgeCases"
+  administration:
+    version: "1.0.0"
+    revision: "0"
+  elementDefaults:
+    unitPolicy: "allow-missing"
+    language: "en"
+  initialElements:
+    - { path: "Process/TemperatureC",       type: "Property", valueType: "double" }
+    - { path: "Process/TemperatureF",       type: "Property", valueType: "double" }
+    - { path: "Dimensions/LengthM",         type: "Property", valueType: "double", unit: "m" }
+    - { path: "Order/Id",                    type: "Property", valueType: "string" }
+    - { path: "Order/Priority",              type: "Property", valueType: "string" }
+    - { path: "Order/Customer/FullName",     type: "Property", valueType: "string" }
+    - { path: "Derived/Serial",              type: "Property", valueType: "string" }
+    - { path: "Lookup/CountryName",          type: "Property", valueType: "string" }
+    - { path: "Speed/Normalized",            type: "Property", valueType: "double" }
+    - { path: "Date/UTC",                    type: "Property", valueType: "dateTime" }
+    - { path: "Meta/Mode",                   type: "Property", valueType: "string" }
+    - { path: "Meta/Category",               type: "Property", valueType: "string" }
+    - { path: "Optional/TZ",                 type: "Property", valueType: "string" }
+    - { path: "Unsafe/CycledVar",            type: "Property", valueType: "string" }
+
+variables:
+  tempC:
+    jsonPath: "$.line.temps.celsius"
+  tempF:
+    var: "tempC"  # var referencing var (no-op indirection)
+  firstName:
+    jsonPath: "$.user.first"
+  lastName:
+    jsonPath: "$.user.last"
+  countryCode:
+    jsonPath: "$.lookupKey"
+  selfCycle:
+    var: "selfCycle"  # intentional cycle to test detection
+
+rules:
+  - target: "Process/TemperatureC"
+    source:
+      var: "tempC"
+      transform:
+        - { op: "trim" }
+        - { op: "toNumber" }
+        - { op: "round", places: 1 }
+    constraints:
+      - { kind: "range", min: 0, max: 1000 }
+
+  - target: "Process/TemperatureF"
+    source:
+      var: "tempC"
+      transform:
+        - { op: "trim" }
+        - { op: "toNumber" }
+        - { op: "unitConvert", from: "C", to: "F" }
+        - { op: "round", places: 1 }
+
+  - target: "Dimensions/LengthM"
+    source:
+      jsonPath: "$.line.lengthMm"
+      transform:
+        - { op: "toNumber" }
+        - { op: "unitConvert", from: "mm", to: "m" }
+
+  - target: "Order/Id"
+    source:
+      jsonPath: "$.order.id"
+      transform: [ { op: "trim" } ]
+    constraints:
+      - { kind: "regex", pattern: "^[A-Z]{3}-[0-9]+$" }
+
+  - target: "Order/Priority"
+    source: { jsonPath: "$.order.priority" }
+    when:
+      any: [ { jsonPath: "$.order.priority", equals: "high" } ]
+
+  - target: "Order/Customer/FullName"
+    source:
+      constant: ""
+      transform:
+        - op: "concat"
+          separator: " "
+          parts:
+            - { var: "firstName" }
+            - { var: "lastName" }
+        - { op: "trim" }
+    constraints:
+      - { kind: "maxLength", value: 100 }
+
+  - target: "Derived/Serial"
+    source:
+      jsonPath: "$.text"
+      transform:
+        - { op: "regexExtract", pattern: "SN-([A-Z0-9-]+)", group: 1 }
+    constraints:
+      - { kind: "maxLength", value: 32 }
+
+  - target: "Lookup/CountryName"
+    source:
+      var: "countryCode"
+      transform:
+        - op: "lookup"
+          table:
+            DE: "Germany"
+            AT: "Austria"
+            CH: "Switzerland"
+        - { op: "defaultIfEmpty", value: "Unknown" }
+
+  - target: "Speed/Normalized"
+    source: { jsonPath: "$.line.speed" }
+    fallback:
+      - { jsonPath: "$.line.speedBackup" }
+      - { constant: 250 }
+    transform:
+      - { op: "toNumber" }
+      - { op: "clamp", min: 0, max: 200 }
+
+  - target: "Date/UTC"
+    source:
+      jsonPath: "$.date"
+      transform:
+        - { op: "parseDateTime" }
+        - { op: "toZoned", zone: "UTC" }
+
+  - target: "Meta/Mode"
+    source: { jsonPath: "$.meta.mode" }
+    constraints:
+      - kind: "enum"
+        values: [ "AUTO", "MANUAL" ]
+
+  - target: "Meta/Category"
+    source: { jsonPath: "$.meta.category" }
+    constraints:
+      - kind: "enum"
+        values: [ "red", "green", "blue" ]
+
+  - target: "Optional/TZ"
+    source:
+      jsonPath: "$.env.tz"
+      transform:
+        - { op: "defaultIfEmpty", value: "UTC" }
+
+  - target: "Unsafe/CycledVar"
+    source: { var: "selfCycle" }
+

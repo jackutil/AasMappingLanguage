@@ -1,0 +1,85 @@
+apiVersion: "aasx.map/v1"
+name: "CatenaX_Batch_v3_0_0"
+description: "Map incoming batch JSON to Catena-X Batch submodel (v3.0.0)."
+
+model:
+  uploadId: "u_demo"
+
+submodel:
+  createIfMissing: true
+  idStrategy:
+    kind: "uuidv4"
+  idShort: "Batch"
+  kind: "INSTANCE"
+  semanticId: "urn:bamm:io.catenax.batch:3.0.0#Batch"
+  administration:
+    version: "3.0.0"
+    revision: "0"
+  displayName:
+    - { lang: "en", text: "Catena-X Batch" }
+  description:
+    - { lang: "en", text: "Standardized Batch submodel for Catena-X v3.0.0." }
+  elementDefaults:
+    unitPolicy: "allow-missing"
+    language: "en"
+  initialElements:
+    - { path: "batchId",                   type: "Property", valueType: "string",   semanticId: "urn:bamm:io.catenax.batch:3.0.0#batchId" }
+    - { path: "manufacturingDate",         type: "Property", valueType: "dateTime", semanticId: "urn:bamm:io.catenax.batch:3.0.0#manufacturingDate" }
+    - { path: "manufacturingCountry",      type: "Property", valueType: "string",   semanticId: "urn:bamm:io.catenax.batch:3.0.0#manufacturingCountry" }
+    - { path: "materialNumberCustomer",    type: "Property", valueType: "string",   semanticId: "urn:bamm:io.catenax.batch:3.0.0#materialNumberCustomer" }
+    - { path: "materialNumberSupplier",    type: "Property", valueType: "string",   semanticId: "urn:bamm:io.catenax.batch:3.0.0#materialNumberSupplier" }
+    - { path: "manufacturerId",            type: "Property", valueType: "string",   semanticId: "urn:bamm:io.catenax.batch:3.0.0#manufacturerId" }
+
+variables:
+  batchId:
+    jsonPath: "$.batch.id"
+  manufacturingDate:
+    jsonPath: "$.batch.production.date"
+  manufacturingCountry:
+    jsonPath: "$.batch.production.country"
+  materialNumberCustomer:
+    jsonPath: "$.batch.material.customerPartId"
+  materialNumberSupplier:
+    jsonPath: "$.batch.material.supplierPartId"
+  manufacturerId:
+    jsonPath: "$.batch.manufacturer.bpn"
+
+rules:
+  - target: "batchId"
+    source: { var: "batchId" }
+    transform:
+      - { op: "trim" }
+    constraints:
+      - { kind: "maxLength", value: 128 }
+
+  - target: "manufacturingDate"
+    source: { var: "manufacturingDate" }
+    transform:
+      - { op: "parseDateTime" }
+      - { op: "toZoned", zone: "UTC" }
+
+  - target: "manufacturingCountry"
+    source: { var: "manufacturingCountry" }
+    transform:
+      - { op: "trim" }
+    constraints:
+      - { kind: "regex", pattern: "^[A-Z]{2}$" }
+
+  - target: "materialNumberCustomer"
+    source: { var: "materialNumberCustomer" }
+    transform:
+      - { op: "trim" }
+    constraints:
+      - { kind: "maxLength", value: 128 }
+
+  - target: "materialNumberSupplier"
+    source: { var: "materialNumberSupplier" }
+    transform:
+      - { op: "trim" }
+    constraints:
+      - { kind: "maxLength", value: 128 }
+
+  - target: "manufacturerId"
+    source: { var: "manufacturerId" }
+    constraints:
+      - { kind: "regex", pattern: "^BPNL[0-9A-Z]{12}$" }

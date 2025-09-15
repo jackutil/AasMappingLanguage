@@ -1,0 +1,98 @@
+{
+  "modelType" : "Submodel",
+  "kind" : "Instance",
+  "semanticId" : {
+    "keys" : [ {
+      "type" : "GlobalReference",
+      "value" : "urn:bamm:io.catenax.batch:3.0.0#Batch"
+    } ],
+    "type" : "ModelReference"
+  },
+  "administration" : {
+    "revision" : "0",
+    "version" : "3.0.0"
+  },
+  "id" : "urn:uuid:143866f4-c28d-4802-a4e8-012ca2744899",
+  "description" : [ {
+    "language" : "en",
+    "text" : "Standardized Batch submodel for Catena-X v3.0.0."
+  } ],
+  "displayName" : [ {
+    "language" : "en",
+    "text" : "Catena-X Batch"
+  } ],
+  "idShort" : "Batch",
+  "submodelElements" : [ {
+    "modelType" : "Property",
+    "semanticId" : {
+      "keys" : [ {
+        "type" : "GlobalReference",
+        "value" : "urn:bamm:io.catenax.batch:3.0.0#batchId"
+      } ],
+      "type" : "ModelReference"
+    },
+    "value" : "BATCH-2024-09-02-01",
+    "valueType" : "xs:string",
+    "idShort" : "batchId"
+  }, {
+    "modelType" : "Property",
+    "semanticId" : {
+      "keys" : [ {
+        "type" : "GlobalReference",
+        "value" : "urn:bamm:io.catenax.batch:3.0.0#manufacturingDate"
+      } ],
+      "type" : "ModelReference"
+    },
+    "value" : "2024-09-02T08:15:30Z",
+    "valueType" : "xs:dateTime",
+    "idShort" : "manufacturingDate"
+  }, {
+    "modelType" : "Property",
+    "semanticId" : {
+      "keys" : [ {
+        "type" : "GlobalReference",
+        "value" : "urn:bamm:io.catenax.batch:3.0.0#manufacturingCountry"
+      } ],
+      "type" : "ModelReference"
+    },
+    "value" : "DE",
+    "valueType" : "xs:string",
+    "idShort" : "manufacturingCountry"
+  }, {
+    "modelType" : "Property",
+    "semanticId" : {
+      "keys" : [ {
+        "type" : "GlobalReference",
+        "value" : "urn:bamm:io.catenax.batch:3.0.0#materialNumberCustomer"
+      } ],
+      "type" : "ModelReference"
+    },
+    "value" : "CUST-MAT-0815",
+    "valueType" : "xs:string",
+    "idShort" : "materialNumberCustomer"
+  }, {
+    "modelType" : "Property",
+    "semanticId" : {
+      "keys" : [ {
+        "type" : "GlobalReference",
+        "value" : "urn:bamm:io.catenax.batch:3.0.0#materialNumberSupplier"
+      } ],
+      "type" : "ModelReference"
+    },
+    "value" : "SUPP-4711-A",
+    "valueType" : "xs:string",
+    "idShort" : "materialNumberSupplier"
+  }, {
+    "modelType" : "Property",
+    "semanticId" : {
+      "keys" : [ {
+        "type" : "GlobalReference",
+        "value" : "urn:bamm:io.catenax.batch:3.0.0#manufacturerId"
+      } ],
+      "type" : "ModelReference"
+    },
+    "value" : "BPNL00000003CML1",
+    "valueType" : "xs:string",
+    "idShort" : "manufacturerId"
+  } ]
+}

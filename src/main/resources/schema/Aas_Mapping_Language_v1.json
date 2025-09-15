@@ -1,0 +1,537 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:aasx:map:schema:v1",
+  "title": "AASX Declarative Mapping Config",
+  "type": "object",
+  "required": ["apiVersion", "name", "model", "rules"],
+  "additionalProperties": false,
+  "properties": {
+    "apiVersion": { "const": "aasx.map/v1" },
+    "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "description": { "type": "string" },
+
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["uploadId"],
+      "properties": {
+        "uploadId": { "type": "string", "minLength": 1 },
+        "submodelId": { "type": "string" },
+        "templateSubmodelId": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if": { "required": ["submodelId"] },
+          "then": { "not": { "required": ["templateSubmodelId"] } }
+        }
+      ]
+    },
+
+    "defaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "timezone": { "type": "string" },
+        "units": {
+          "type": "object",
+          "description": "Default unit per conceptual dimension (e.g., temperature → °C).",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+
+    "variables": {
+      "type": "object",
+      "description": "Named selectors reusable in rules.",
+      "additionalProperties": { "$ref": "#/$defs/selector" }
+    },
+
+    "submodel": { "$ref": "#/$defs/submodelHeader" },
+
+    "registration": { "$ref": "#/$defs/registration" },
+
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/rule" }
+    }
+  },
+
+  "$defs": {
+    "langString": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lang", "text"],
+      "properties": {
+        "lang": { "type": "string", "minLength": 2 },
+        "text": { "type": "string" }
+      }
+    },
+
+    "idStrategy": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind"],
+          "properties": {
+            "kind": { "const": "uuidv4" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "id"],
+          "properties": {
+            "kind": { "const": "explicit" },
+            "id": { "type": "string", "minLength": 1 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "urn"],
+          "properties": {
+            "kind": { "const": "urn" },
+            "urn": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["namespace", "suffix"],
+              "properties": {
+                "namespace": { "type": "string", "minLength": 1 },
+                "suffix": { "type": "string", "minLength": 1 }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "fields"],
+          "properties": {
+            "kind": { "const": "hash" },
+            "fields": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "algorithm": {
+              "type": "string",
+              "enum": ["sha256"],
+              "default": "sha256"
+            }
+          }
+        }
+      ]
+    },
+
+    "initialElement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "type"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "type": {
+          "type": "string",
+          "enum": [
+            "Property",
+            "Range",
+            "File",
+            "Blob",
+            "MultiLanguageProperty",
+            "SubmodelElementCollection",
+            "ReferenceElement"
+          ]
+        },
+        "valueType": { "type": "string" },
+        "semanticId": { "type": "string" },
+        "unit": { "type": "string" },
+        "contentType": { "type": "string" }
+      }
+    },
+
+    "submodelHeader": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["createIfMissing", "idStrategy", "kind", "semanticId"],
+      "properties": {
+        "createIfMissing": { "type": "boolean" },
+        "idStrategy": { "$ref": "#/$defs/idStrategy" },
+        "idShort": { "type": "string" },
+        "kind": { "type": "string", "enum": ["TEMPLATE", "INSTANCE"] },
+        "semanticId": { "type": "string", "minLength": 1 },
+        "administration": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["version", "revision"],
+          "properties": {
+            "version": { "type": "string" },
+            "revision": { "type": "string" }
+          }
+        },
+        "displayName": { "type": "array", "items": { "$ref": "#/$defs/langString" } },
+        "description": { "type": "array", "items": { "$ref": "#/$defs/langString" } },
+        "qualifiers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "description": "AAS qualifier; loosely typed to permit ecosystem variance.",
+            "properties": {
+              "type": { "type": "string" },
+              "valueType": { "type": "string" },
+              "value": {},
+              "semanticId": { "type": "string" }
+            },
+            "additionalProperties": true
+          }
+        },
+        "extensions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "description": "AAS extension; schema intentionally open.",
+            "additionalProperties": true
+          }
+        },
+        "initialElements": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/initialElement" }
+        },
+        "elementDefaults": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "unitPolicy": { "type": "string", "enum": ["explicit", "allow-missing"] },
+            "language": { "type": "string" }
+          }
+        }
+      }
+    },
+
+    "registration": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dtr": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": { "type": "boolean", "default": false },
+            "endpoint": { "type": "string", "format": "uri" },
+            "submodelDescriptor": {
+              "type": "object",
+              "description": "Pass-through descriptor payload; validated by DTR server.",
+              "additionalProperties": true
+            }
+          }
+        },
+        "edc": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": { "type": "boolean", "default": false },
+            "contract": { "type": "object", "additionalProperties": true }
+          }
+        }
+      }
+    },
+
+    "selector": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["jsonPath"],
+          "properties": {
+            "jsonPath": { "type": "string", "minLength": 1 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["constant"],
+          "properties": {
+            "constant": {}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["var"],
+          "properties": {
+            "var": { "type": "string", "minLength": 1 }
+          }
+        }
+      ]
+    },
+
+    "sourceExpr": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["jsonPath"],
+          "properties": {
+            "jsonPath": { "type": "string", "minLength": 1 },
+            "transform": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/transform" }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["constant"],
+          "properties": {
+            "constant": {},
+            "transform": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/transform" }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["var"],
+          "properties": {
+            "var": { "type": "string", "minLength": 1 },
+            "transform": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/transform" }
+            }
+          }
+        }
+      ]
+    },
+
+    "transform": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op"],
+          "properties": { "op": { "const": "toInteger" } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op"],
+          "properties": { "op": { "const": "toNumber" } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "places"],
+          "properties": {
+            "op": { "const": "round" },
+            "places": { "type": "integer", "minimum": 0, "maximum": 10 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op"],
+          "properties": { "op": { "const": "trim" } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "value"],
+          "properties": {
+            "op": { "const": "defaultIfEmpty" },
+            "value": {}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "from", "to"],
+          "properties": {
+            "op": { "const": "unitConvert" },
+            "from": { "type": "string" },
+            "to": { "type": "string" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "format"],
+          "properties": {
+            "op": { "const": "parseDateTime" },
+            "format": { "type": "string", "enum": ["iso8601"] }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "zone"],
+          "properties": {
+            "op": { "const": "toZoned" },
+            "zone": { "type": "string" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "min", "max"],
+          "properties": {
+            "op": { "const": "clamp" },
+            "min": { "type": "number" },
+            "max": { "type": "number" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "table"],
+          "properties": {
+            "op": { "const": "lookup" },
+            "table": {
+              "type": "object",
+              "minProperties": 1,
+              "additionalProperties": { "type": "string" }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "pattern"],
+          "properties": {
+            "op": { "const": "regexExtract" },
+            "pattern": { "type": "string" },
+            "group": { "type": "integer", "minimum": 0, "default": 0 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "parts"],
+          "properties": {
+            "op": { "const": "concat" },
+            "parts": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "oneOf": [
+                  { "type": "string" },
+                  { "$ref": "#/$defs/selector" }
+                ]
+              }
+            },
+            "separator": { "type": "string", "default": "" }
+          }
+        }
+      ]
+    },
+
+    "constraint": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "min", "max"],
+          "properties": {
+            "kind": { "const": "range" },
+            "min": { "type": "number" },
+            "max": { "type": "number" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "pattern"],
+          "properties": {
+            "kind": { "const": "regex" },
+            "pattern": { "type": "string" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "values"],
+          "properties": {
+            "kind": { "const": "enum" },
+            "values": { "type": "array", "minItems": 1, "items": {} }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "value"],
+          "properties": {
+            "kind": { "const": "maxLength" },
+            "value": { "type": "integer", "minimum": 1 }
+          }
+        }
+      ]
+    },
+
+    "predicateAtom": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["jsonPath", "equals"],
+      "properties": {
+        "jsonPath": { "type": "string", "minLength": 1 },
+        "equals": {}
+      }
+    },
+
+    "predicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "all": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/predicateAtom" }
+        },
+        "any": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/predicateAtom" }
+        },
+        "not": { "$ref": "#/$defs/predicate" }
+      },
+      "minProperties": 1
+    },
+
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target", "source"],
+      "properties": {
+        "target": { "type": "string", "minLength": 1, "description": "Canonical AAS element path (e.g., 'Process/Temperature')." },
+
+        "source": { "$ref": "#/$defs/sourceExpr" },
+
+        "fallback": {
+          "type": "array",
+          "description": "Tried in order if source yields empty/undefined.",
+          "items": { "$ref": "#/$defs/sourceExpr" }
+        },
+
+        "transform": {
+          "type": "array",
+          "description": "Applied after source/fallback transforms (if any).",
+          "items": { "$ref": "#/$defs/transform" }
+        },
+
+        "constraints": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/constraint" }
+        },
+
+        "when": { "$ref": "#/$defs/predicate" },
+
+        "project": {
+          "type": "object",
+          "description": "For composite AAS types (e.g., Range, File). Map fields to selectors.",
+          "additionalProperties": { "$ref": "#/$defs/selector" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,97 @@
+apiVersion: "aasx.map/v1"
+name: "CatenaX_SerialPart_v1"
+description: "Map incoming part JSON to Catena-X SerialPart submodel (v1.1.0)."
+
+model:
+  uploadId: "u_demo"
+
+submodel:
+  createIfMissing: true
+  idStrategy:
+    kind: "uuidv4"
+  idShort: "SerialPart"
+  kind: "INSTANCE"
+  semanticId: "urn:bamm:io.catenax.serial_part:1.1.0#SerialPart"
+  administration:
+    version: "1.1.0"
+    revision: "0"
+  displayName:
+    - { lang: "en", text: "Catena-X Serial Part" }
+  description:
+    - { lang: "en", text: "Standardized SerialPart submodel for traceability in Catena-X." }
+  elementDefaults:
+    unitPolicy: "allow-missing"
+    language: "en"
+  initialElements:
+    - { path: "manufacturerId",        type: "Property", valueType: "string" }
+    - { path: "manufacturerPartId",     type: "Property", valueType: "string" }
+    - { path: "customerPartId",         type: "Property", valueType: "string" }
+    - { path: "serialNumber",           type: "Property", valueType: "string" }
+    - { path: "manufacturingDate",      type: "Property", valueType: "dateTime" }
+    - { path: "manufacturingCountry",   type: "Property", valueType: "string" }
+    - { path: "catenaXId",              type: "Property", valueType: "string" }
+
+variables:
+  manufacturerId:
+    jsonPath: "$.part.manufacturer.bpn"
+  manufacturerPartId:
+    jsonPath: "$.part.manufacturer.partId"
+  customerPartId:
+    jsonPath: "$.part.customer.partId"
+  serialNumber:
+    jsonPath: "$.part.serial"
+  manufacturingDate:
+    jsonPath: "$.part.production.date"
+  manufacturingCountry:
+    jsonPath: "$.part.production.country"
+  partInstanceId:
+    jsonPath: "$.part.instanceId"
+
+rules:
+  - target: "manufacturerId"
+    source: { var: "manufacturerId" }
+    constraints:
+      - { kind: "regex", pattern: "^BPNL[0-9A-Z]{12}$" }
+
+  - target: "manufacturerPartId"
+    source: { var: "manufacturerPartId" }
+    transform:
+      - { op: "trim" }
+    constraints:
+      - { kind: "maxLength", value: 128 }
+
+  - target: "customerPartId"
+    source: { var: "customerPartId" }
+    transform:
+      - { op: "trim" }
+    constraints:
+      - { kind: "maxLength", value: 128 }
+
+  - target: "serialNumber"
+    source: { var: "serialNumber" }
+    transform:
+      - { op: "trim" }
+    constraints:
+      - { kind: "maxLength", value: 128 }
+
+  - target: "manufacturingDate"
+    source: { var: "manufacturingDate" }
+    transform:
+      - { op: "parseDateTime" }
+      - { op: "toZoned", zone: "UTC" }
+
+  - target: "manufacturingCountry"
+    source: { var: "manufacturingCountry" }
+    transform:
+      - { op: "trim" }
+    constraints:
+      - { kind: "regex", pattern: "^[A-Z]{2}$" }
+
+  - target: "catenaXId"
+    source:
+      var: "partInstanceId"
+    fallback:
+      - jsonPath: "$.part.serial"
+        transform:
+          - op: "concat"
+            parts: [ "urn:cx:serial:", { var: "serialNumber" } ]

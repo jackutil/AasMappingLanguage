@@ -1,0 +1,41 @@
+apiVersion: "aasx.map/v1"
+name: "Demo Mapping"
+model:
+  uploadId: "u_demo"
+variables:
+  tempC:
+    jsonPath: "$.line.temperatureC"
+  batchRaw:
+    jsonPath: "$.meta.batch"
+rules:
+  - target: "Process/Temperature"
+    source:
+      var: "tempC"
+      transform:
+        - op: "toNumber"
+        - op: "round"
+          places: 1
+    constraints:
+      - kind: "range"
+        min: 30
+        max: 300
+  - target: "Process/BatchId"
+    source:
+      var: "batchRaw"
+    transform:
+      - op: "trim"
+  - target: "Process/Duration"
+    source:
+      jsonPath: "$.line.durationSec"
+      transform:
+        - op: "toInteger"
+    constraints:
+      - kind: "range"
+        min: 0
+        max: 100000
+  - target: "Process/Info"
+    project:
+      min:
+        jsonPath: "$.line.min"
+      max:
+        jsonPath: "$.line.max"
