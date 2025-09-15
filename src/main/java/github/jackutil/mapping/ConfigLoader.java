@@ -17,11 +17,13 @@ public final class ConfigLoader {
 
     public static JsonNode readConfig(Path path) throws IOException {
         String name = path.getFileName().toString().toLowerCase(Locale.ROOT);
+
         byte[] bytes = Files.readAllBytes(path);
+
         if (name.endsWith(".yaml") || name.endsWith(".yml")) {
             return YAML.readTree(bytes);
         }
-        // Default to JSON
+
         return JSON.readTree(bytes);
     }
 
