@@ -1,5 +1,7 @@
 # AAS Mapping Language (AML)
 
+<img src="docs/img/AML_Logo.png" alt="Alt text" width="300"/>
+
 A declarative mapping from JSON payloads to nested JSON or AAS v3 Submodel JSON (via AAS4J).
 
 ## What is AML?
