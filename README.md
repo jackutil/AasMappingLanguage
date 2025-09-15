@@ -29,6 +29,17 @@ To further explore the usage read the docs section!
 - Java 21
 - Maven 3.8+
 
+## Dependencies
+- AAS4J: `org.eclipse.digitaltwin.aas4j` 1.0.4 (`aas4j-model`, `aas4j-dataformat-json`, `aas4j-dataformat-core`)
+- Jackson: `com.fasterxml.jackson.core:jackson-databind` 2.20.0, `com.fasterxml.jackson.dataformat:jackson-dataformat-yaml` 2.20.0
+- JsonPath: `com.jayway.jsonpath:json-path` 2.9.0
+- Logging: `org.slf4j:slf4j-simple` 2.0.13 (runtime)
+- Tests: `junit:junit` 4.11, `org.junit.jupiter:junit-jupiter` 5.10.2 (test scope)
+
+Notes:
+- Managed by Maven via `pom.xml`; no manual installation required.
+- Check licenses in each dependency if redistributing binaries; this project is Apache-2.0.
+
 ## Quick Start
 Build and run a mapping:
 
