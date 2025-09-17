@@ -1,10 +1,12 @@
 package github.jackutil.cli;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import github.jackutil.mapping.ConfigLoader;
 import github.jackutil.mapping.MappingEngine;
 import github.jackutil.mapping.MappingResult;
+import github.jackutil.mapping.SchemaExporter;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -39,7 +41,10 @@ public class App {
                 case "--config" -> configPath = Path.of(args[++i]);
                 case "--payload" -> payloadPath = Path.of(args[++i]);
                 case "--outdir" -> outDir = Path.of(args[++i]);
-                case "--help" -> { printHelp(); return; }
+                case "--help" -> {
+                    printHelp();
+                    return;
+                }
             }
         }
         if (configPath == null || payloadPath == null) {
@@ -65,7 +70,8 @@ public class App {
         }
         if (!result.getErrors().isEmpty()) {
             System.err.println("Errors:");
-            for (String e : result.getErrors()) System.err.println(" - " + e);
+            for (String e : result.getErrors())
+                System.err.println(" - " + e);
         }
     }
 
@@ -76,7 +82,10 @@ public class App {
             switch (args[i]) {
                 case "--config" -> configPath = Path.of(args[++i]);
                 case "--out" -> outFile = Path.of(args[++i]);
-                case "--help" -> { printHelp(); return; }
+                case "--help" -> {
+                    printHelp();
+                    return;
+                }
             }
         }
         if (configPath == null) {
@@ -85,12 +94,13 @@ public class App {
             return;
         }
         JsonNode config = ConfigLoader.readConfig(configPath);
-        github.jackutil.mapping.SchemaExporter exporter = new github.jackutil.mapping.SchemaExporter();
-        String json = new com.fasterxml.jackson.databind.ObjectMapper()
+        SchemaExporter exporter = new SchemaExporter();
+        String json = new ObjectMapper()
                 .writerWithDefaultPrettyPrinter()
                 .writeValueAsString(exporter.exportPayloadSchema(config));
         if (outFile != null) {
-            if (outFile.getParent() != null) Files.createDirectories(outFile.toAbsolutePath().getParent());
+            if (outFile.getParent() != null)
+                Files.createDirectories(outFile.toAbsolutePath().getParent());
             Files.writeString(outFile, json, StandardCharsets.UTF_8);
             System.out.println("Wrote schema: " + outFile.toAbsolutePath());
         } else {
@@ -115,10 +125,12 @@ public class App {
         } else if (config.path("submodel").hasNonNull("idShort")) {
             base = config.path("submodel").get("idShort").asText();
         }
-        if (base == null || base.isBlank()) base = "mapping-output";
-        // Sanitize filename: allow letters, digits, dash, underscore, dot; replace others with underscore
+        if (base == null || base.isBlank())
+            base = "mapping-output";
+
         base = base.replaceAll("[^A-Za-z0-9._-]", "_");
-        if (base.equals(".") || base.equals("..")) base = "mapping-output";
+        if (base.equals(".") || base.equals(".."))
+            base = "mapping-output";
         return base;
     }
 }
