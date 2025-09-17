@@ -26,4 +26,3 @@ public final class MappingResult {
         return Collections.unmodifiableList(errors);
     }
 }
-
